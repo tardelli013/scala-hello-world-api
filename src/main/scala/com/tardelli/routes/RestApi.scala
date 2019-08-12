@@ -11,6 +11,7 @@ import com.tardelli.messages._
 
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutor, Future}
 import StatusCodes._
+import com.tardelli.swagger.SwaggerConfig
 
 
 class RestApi(system: ActorSystem, timeout: Timeout) extends RestRoutes {
@@ -98,8 +99,10 @@ trait RestRoutes extends CoachellaApi with EventMarshaller {
     }
   }
 
+  val routes: Route = createEventRoute ~ getAllEventsRoute ~ getEventRoute ~ deleteEventRoute ~ purchaseEventTicketRoute ~
+    SwaggerConfig().routes ~
+    path("swagger") { getFromResource("swagger-ui/index.html") } ~ getFromResourceDirectory("swagger-ui")
 
-  val routes: Route = createEventRoute ~ getAllEventsRoute ~ getEventRoute ~ deleteEventRoute ~ purchaseEventTicketRoute
 }
 
 trait CoachellaApi {
