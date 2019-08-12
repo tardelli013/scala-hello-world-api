@@ -6,7 +6,7 @@ import io.swagger.annotations._
 import javax.ws.rs.{Path, PathParam}
 
 @Path("/api/v1")
-@Api(value = "/api/v1")
+@Api
 trait EventRest {
 
   @ApiOperation(value = "Event",

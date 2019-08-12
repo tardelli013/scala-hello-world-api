@@ -28,7 +28,7 @@ case class SwaggerConfig() extends SwaggerHttpService {
 
   override def info =
     new Info(
-      "Hello World API - End User",
+      "Hello World API",
       "1.0",
       "Swagger",
       "",
