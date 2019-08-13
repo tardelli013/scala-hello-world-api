@@ -1,27 +1,26 @@
 package com.tardelli.routes
 
 import akka.actor.{ActorRef, ActorSystem}
-import akka.util.Timeout
-import akka.pattern.ask
-import akka.http.scaladsl.model.StatusCodes
+import akka.http.scaladsl.model.StatusCodes._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server._
-import com.tardelli.messages.Event._
+import akka.pattern.ask
+import akka.util.Timeout
+import com.tardelli.messages.EventMessage._
 import com.tardelli.messages._
+import com.tardelli.swagger.SwaggerConfig
 
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutor, Future}
-import StatusCodes._
-import com.tardelli.swagger.SwaggerConfig
 
 
 class RestApi(system: ActorSystem, timeout: Timeout) extends RestRoutes {
   implicit val requestTimeout: Timeout = timeout
   implicit def executionContext: ExecutionContextExecutor = system.dispatcher
 
-  def createCoachella(): ActorRef = system.actorOf(Event.props)
+  def createEventActor(): ActorRef = system.actorOf(EventMessage.props)
 }
 
-trait RestRoutes extends CoachellaApi with EventMarshaller {
+trait RestRoutes extends EventApi with EventMarshaller {
   val service = "api"
   val version = "v1"
 
@@ -33,8 +32,8 @@ trait RestRoutes extends CoachellaApi with EventMarshaller {
         pathEndOrSingleSlash {
           entity(as[EventDescription]) { ed =>
             onSuccess(createEvent(event, ed.tickets)) {
-              case Event.EventCreated(event) => complete(Created, event)
-              case Event.EventExists =>
+              case EventMessage.EventCreated(event) => complete(Created, event)
+              case EventMessage.EventExists =>
                 val err = Error(s"$event event already exists!")
                 complete(BadRequest, err)
             }
@@ -105,28 +104,28 @@ trait RestRoutes extends CoachellaApi with EventMarshaller {
 
 }
 
-trait CoachellaApi {
+trait EventApi {
 
-  def createCoachella(): ActorRef
+  def createEventActor(): ActorRef
 
   implicit def executionContext: ExecutionContext
   implicit def requestTimeout: Timeout
 
-  lazy val coachella: ActorRef = createCoachella()
+  lazy val eventActor: ActorRef = createEventActor()
 
   def createEvent(event: String, numberOfTickets: Int): Future[EventResponse] = {
-    coachella.ask(CreateEvent(event, numberOfTickets))
+    eventActor.ask(CreateEvent(event, numberOfTickets))
       .mapTo[EventResponse]
   }
 
-  def getEvents(): Future[Events] = coachella.ask(GetEvents).mapTo[Events]
+  def getEvents(): Future[Events] = eventActor.ask(GetEvents).mapTo[Events]
 
-  def getEvent(event: String): Future[Option[Event]] = coachella.ask(GetEvent(event)).mapTo[Option[Event]]
+  def getEvent(event: String): Future[Option[Event]] = eventActor.ask(GetEvent(event)).mapTo[Option[Event]]
 
-  def cancelEvent(event: String): Future[Option[Event]] = coachella.ask(CancelEvent(event)).mapTo[Option[Event]]
+  def cancelEvent(event: String): Future[Option[Event]] = eventActor.ask(CancelEvent(event)).mapTo[Option[Event]]
 
-  def requestTickets(event: String, tickets: Int): Future[TicketSeller.Tickets] = {
-    coachella.ask(GetTickets(event, tickets)).mapTo[TicketSeller.Tickets]
+  def requestTickets(event: String, tickets: Int): Future[TicketSellerMessage.Tickets] = {
+    eventActor.ask(GetTickets(event, tickets)).mapTo[TicketSellerMessage.Tickets]
   }
 
 }

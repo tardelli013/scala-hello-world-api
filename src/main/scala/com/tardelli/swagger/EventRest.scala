@@ -1,6 +1,6 @@
 package com.tardelli.swagger
 
-import com.tardelli.messages.Event.Event
+import com.tardelli.messages.EventMessage.Event
 import com.tardelli.messages.{EventDescription, TicketRequests}
 import io.swagger.annotations._
 import javax.ws.rs.{Path, PathParam}
@@ -51,7 +51,7 @@ trait EventRest {
 
   @ApiOperation(value = "Event",
     tags = Array("event"),
-    httpMethod = "GET",
+    httpMethod = "DELETE",
     produces = "application/json",
     notes = "This route will return a Events by name")
   @ApiResponses(Array(

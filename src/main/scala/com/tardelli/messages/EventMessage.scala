@@ -4,7 +4,7 @@ import akka.actor.Props
 import akka.util.Timeout
 import com.tardelli.actors.EventActor
 
-object Event {
+object EventMessage {
 
   def props(implicit timeout: Timeout) = Props(new EventActor)
 

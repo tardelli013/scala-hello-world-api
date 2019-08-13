@@ -1,7 +1,7 @@
 package com.tardelli.messages
 
 import play.api.libs.json._
-import com.tardelli.messages.Event._
+import com.tardelli.messages.EventMessage._
 import de.heikoseeberger.akkahttpplayjson._
 
 // message containing the initial number of tickets for the event
@@ -25,8 +25,8 @@ trait EventMarshaller extends PlayJsonSupport {
   implicit val errorFormat: OFormat[Error] = Json.format[Error]
   implicit val eventFormat: OFormat[Event] = Json.format[Event]
   implicit val eventsFormat: OFormat[Events] = Json.format[Events]
-  implicit val ticketFormat: OFormat[TicketSeller.Ticket] = Json.format[TicketSeller.Ticket]
-  implicit val ticketsFormat: OFormat[TicketSeller.Tickets] = Json.format[TicketSeller.Tickets]
+  implicit val ticketFormat: OFormat[TicketSellerMessage.Ticket] = Json.format[TicketSellerMessage.Ticket]
+  implicit val ticketsFormat: OFormat[TicketSellerMessage.Tickets] = Json.format[TicketSellerMessage.Tickets]
 }
 
 object EventMarshaller extends EventMarshaller

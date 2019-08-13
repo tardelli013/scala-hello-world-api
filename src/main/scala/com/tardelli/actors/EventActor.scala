@@ -3,18 +3,18 @@ package com.tardelli.actors
 import akka.actor._
 import akka.pattern.{ask, pipe}
 import akka.util.Timeout
-import com.tardelli.messages.Event._
+import com.tardelli.messages.EventMessage._
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class EventActor(implicit timeout: Timeout) extends Actor {
 
-  import com.tardelli.messages.TicketSeller
+  import com.tardelli.messages.TicketSellerMessage
 
   //  TicketSeller child
   def createTicketSeller(name: String): ActorRef = {
-    context.actorOf(TicketSeller.props(name), name)
+    context.actorOf(TicketSellerMessage.props(name), name)
   }
 
   def receive: PartialFunction[Any, Unit] = {
@@ -24,10 +24,10 @@ class EventActor(implicit timeout: Timeout) extends Actor {
         val eventTickets = createTicketSeller(name)
         //        builds a list of numbered tickets
         val newTickets = (1 to tickets).map { ticketId =>
-          TicketSeller.Ticket(ticketId)
+          TicketSellerMessage.Ticket(ticketId)
         }.toVector
         //        sends the tickets to the TicketSeller
-        eventTickets ! TicketSeller.Add(newTickets)
+        eventTickets ! TicketSellerMessage.Add(newTickets)
         //        creates an event and responds with EventCreated
         sender() ! EventCreated(Event(name, tickets))
       }
@@ -37,11 +37,11 @@ class EventActor(implicit timeout: Timeout) extends Actor {
 
     case GetTickets(event, tickets) =>
       //      sends an empty Tickets message if the ticket seller couldn't be found
-      def notFound(): Unit = sender() ! TicketSeller.Tickets(event)
+      def notFound(): Unit = sender() ! TicketSellerMessage.Tickets(event)
 
       //      buys from the found TicketSeller
       def buy(child: ActorRef): Unit = {
-        child.forward(TicketSeller.Buy(tickets))
+        child.forward(TicketSellerMessage.Buy(tickets))
       }
       //      executes notFound or buys with the found TicketSeller
       context.child(event).fold(notFound())(buy)
@@ -50,7 +50,7 @@ class EventActor(implicit timeout: Timeout) extends Actor {
     case GetEvent(event) =>
       def notFound() = sender() ! None
 
-      def getEvent(child: ActorRef) = child forward TicketSeller.GetEvent
+      def getEvent(child: ActorRef) = child forward TicketSellerMessage.GetEvent
 
       context.child(event).fold(notFound())(getEvent)
 
@@ -75,7 +75,7 @@ class EventActor(implicit timeout: Timeout) extends Actor {
 
       //      ActorRef carries the message that should be sent to an Actor
       //      Here we'll forward the message to the TicketSeller actor that an event was canceled
-      def cancelEvent(child: ActorRef): Unit = child forward TicketSeller.Cancel
+      def cancelEvent(child: ActorRef): Unit = child forward TicketSellerMessage.Cancel
 
       context.child(event).fold(notFound())(cancelEvent)
   }

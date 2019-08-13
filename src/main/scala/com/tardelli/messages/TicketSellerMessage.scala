@@ -3,7 +3,7 @@ package com.tardelli.messages
 import akka.actor.Props
 import com.tardelli.actors.TicketSellerActor
 
-object TicketSeller {
+object TicketSellerMessage {
 
   def props(event: String) = Props(new  TicketSellerActor(event))
 
