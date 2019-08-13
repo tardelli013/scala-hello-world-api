@@ -3,12 +3,12 @@ package com.tardelli.actors
 import akka.actor._
 import akka.pattern.{ask, pipe}
 import akka.util.Timeout
-import com.tardelli.messages.Coachella._
+import com.tardelli.messages.Event._
 
 import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class Coachella(implicit timeout: Timeout) extends Actor {
+class EventActor(implicit timeout: Timeout) extends Actor {
 
   import com.tardelli.messages.TicketSeller
 

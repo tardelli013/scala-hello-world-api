@@ -1,7 +1,7 @@
 package com.tardelli.messages
 
 import play.api.libs.json._
-import com.tardelli.messages.Coachella._
+import com.tardelli.messages.Event._
 import de.heikoseeberger.akkahttpplayjson._
 
 // message containing the initial number of tickets for the event

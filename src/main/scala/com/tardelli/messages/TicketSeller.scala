@@ -1,11 +1,11 @@
 package com.tardelli.messages
 
 import akka.actor.Props
-import com.tardelli.actors.TicketSeller
+import com.tardelli.actors.TicketSellerActor
 
 object TicketSeller {
 
-  def props(event: String) = Props(new  TicketSeller(event))
+  def props(event: String) = Props(new  TicketSellerActor(event))
 
   case class Add(tickets: Vector[Ticket]) // message to add tickets to the TicketSeller
   case class Buy(tickets: Int) // message to buy tickets from the TicketSeller

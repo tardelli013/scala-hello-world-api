@@ -1,6 +1,6 @@
 package com.tardelli.swagger
 
-import com.tardelli.messages.Coachella.Event
+import com.tardelli.messages.Event.Event
 import com.tardelli.messages.{EventDescription, TicketRequests}
 import io.swagger.annotations._
 import javax.ws.rs.{Path, PathParam}

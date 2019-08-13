@@ -6,7 +6,7 @@ import akka.pattern.ask
 import akka.http.scaladsl.model.StatusCodes
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server._
-import com.tardelli.messages.Coachella._
+import com.tardelli.messages.Event._
 import com.tardelli.messages._
 
 import scala.concurrent.{ExecutionContext, ExecutionContextExecutor, Future}
@@ -18,7 +18,7 @@ class RestApi(system: ActorSystem, timeout: Timeout) extends RestRoutes {
   implicit val requestTimeout: Timeout = timeout
   implicit def executionContext: ExecutionContextExecutor = system.dispatcher
 
-  def createCoachella(): ActorRef = system.actorOf(Coachella.props)
+  def createCoachella(): ActorRef = system.actorOf(Event.props)
 }
 
 trait RestRoutes extends CoachellaApi with EventMarshaller {
@@ -33,8 +33,8 @@ trait RestRoutes extends CoachellaApi with EventMarshaller {
         pathEndOrSingleSlash {
           entity(as[EventDescription]) { ed =>
             onSuccess(createEvent(event, ed.tickets)) {
-              case Coachella.EventCreated(event) => complete(Created, event)
-              case Coachella.EventExists =>
+              case Event.EventCreated(event) => complete(Created, event)
+              case Event.EventExists =>
                 val err = Error(s"$event event already exists!")
                 complete(BadRequest, err)
             }

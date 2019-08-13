@@ -2,11 +2,11 @@ package com.tardelli.messages
 
 import akka.actor.Props
 import akka.util.Timeout
-import com.tardelli.actors.Coachella
+import com.tardelli.actors.EventActor
 
-object Coachella {
+object Event {
 
-  def props(implicit timeout: Timeout) = Props(new Coachella)
+  def props(implicit timeout: Timeout) = Props(new EventActor)
 
   case class CreateEvent(name: String, tickets: Int) // message to create an event
   case class GetEvent(name: String) // message to get an event

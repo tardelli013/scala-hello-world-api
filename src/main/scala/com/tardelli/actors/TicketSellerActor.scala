@@ -1,10 +1,10 @@
 package com.tardelli.actors
 
 import akka.actor.{Actor, PoisonPill}
-import com.tardelli.messages.Coachella
+import com.tardelli.messages.Event
 
 
-class TicketSeller(event: String) extends Actor {
+class TicketSellerActor(event: String) extends Actor {
 
   import com.tardelli.messages.TicketSeller._
 
@@ -26,9 +26,9 @@ class TicketSeller(event: String) extends Actor {
         //   otherwise respond with an empty Tickets message
       } else sender() ! Tickets(event)
     // returns an event containing the number of tickets left when GetEvent is received
-    case GetEvent ⇒ sender() ! Some(Coachella.Event(event, tickets.size))
+    case GetEvent ⇒ sender() ! Some(Event.Event(event, tickets.size))
 
-    case Cancel ⇒ sender() ! Some(Coachella.Event(event, tickets.size))
+    case Cancel ⇒ sender() ! Some(Event.Event(event, tickets.size))
       self ! PoisonPill
   }
 
